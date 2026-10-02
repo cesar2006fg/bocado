@@ -1,0 +1,580 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bocado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: aurora hero with live "scanning" phone + floating macro chips, food marquee, bento features, giant gradient CTA */
+:root{
+  --bg:#F4F7F1; --surface:#FFFFFF; --surface-2:#EEF3EB; --ink:#10201A; --muted:#5A6A60; --line:#DAE4D7;
+  --accent:#16A34A; --accent-2:#0EA5A0; --accent-ink:#FFFFFF; --accent-soft:#DDF3E4;
+  --prot:#3B6CF6; --carb:#F28C28; --fat:#E0457B;
+  --plate:#FFFFFF; --plate-rim:#E4EAE2; --glow:rgba(22,163,74,.35);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B130F; --surface:#131E18; --surface-2:#18251E; --ink:#EAF3EC; --muted:#98AA9E; --line:#24342B;
+  --accent:#34D27A; --accent-2:#2DD4BF; --accent-ink:#04110A; --accent-soft:#16301F;
+  --prot:#7096FF; --carb:#FFA352; --fat:#F46E9E;
+  --plate:#1D2A23; --plate-rim:#2A3A31; --glow:rgba(52,210,122,.35); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0B130F; --surface:#131E18; --surface-2:#18251E; --ink:#EAF3EC; --muted:#98AA9E; --line:#24342B;
+  --accent:#34D27A; --accent-2:#2DD4BF; --accent-ink:#04110A; --accent-soft:#16301F;
+  --prot:#7096FF; --carb:#FFA352; --fat:#F46E9E;
+  --plate:#1D2A23; --plate-rim:#2A3A31; --glow:rgba(52,210,122,.35); color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.6 var(--body);overflow-x:hidden}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:clamp(16px,4vw,32px);position:relative}
+h1,h2,h3{font-family:var(--display);line-height:1;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+
+/* ---------- aurora background ---------- */
+.aurora{position:absolute;inset:0 0 auto 0;height:980px;overflow:hidden;pointer-events:none;z-index:0}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.45;animation:drift 18s ease-in-out infinite alternate}
+.b1{width:520px;height:520px;background:var(--accent);top:-120px;right:-80px}
+.b2{width:420px;height:420px;background:var(--prot);top:260px;right:30%;animation-delay:-6s;opacity:.25}
+.b3{width:380px;height:380px;background:var(--carb);top:80px;left:-140px;animation-delay:-12s;opacity:.28}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,#000 20%,transparent 75%);opacity:.6}
+@keyframes drift{to{transform:translate(60px,40px) scale(1.12)}}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;padding-block:14px}
+.nav-in{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 10px 10px 18px;border-radius:999px;background:color-mix(in srgb,var(--surface) 72%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid color-mix(in srgb,var(--line) 80%,transparent)}
+.logo{display:flex;align-items:center;gap:10px;font:800 1.3rem var(--display);text-decoration:none;letter-spacing:-.01em}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:conic-gradient(var(--prot) 0 35%,var(--carb) 0 75%,var(--fat) 0);position:relative;animation:spin 12s linear infinite}
+.logo-mark::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--surface)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-links a{text-decoration:none;font-weight:600;font-size:.92rem;padding:8px 12px;border-radius:999px;color:var(--muted)}
+.nav-links a:hover{color:var(--ink)}
+.nav-links .pill{background:var(--ink);color:var(--bg);padding:9px 16px}
+.nav-links .pill:hover{color:var(--bg)}
+@media (max-width:640px){.nav-links .hide-sm{display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding-block:48px 90px}
+.hero-copy{min-width:0;display:grid;gap:24px}
+.tag{justify-self:start;display:inline-flex;align-items:center;gap:8px;font:600 .78rem var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:7px 14px 7px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 25%,transparent)}
+.tag i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent);animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 var(--glow)}70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-size:clamp(3rem,8vw,6.2rem);font-weight:800;letter-spacing:-.035em;line-height:.92}
+h1 .shine{background:linear-gradient(100deg,var(--accent) 10%,var(--accent-2) 35%,var(--prot) 55%,var(--fat) 75%,var(--carb) 95%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s ease-in-out infinite alternate}
+@keyframes shine{to{background-position:100% 0}}
+h1 .snap{display:inline-block;position:relative}
+h1 .snap::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.12em;border-radius:99px;background:var(--accent);transform-origin:left;transform:scaleX(1);opacity:.25}
+.lead{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--muted);max-width:40ch}
+.lead b{color:var(--ink)}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.btn{position:relative;display:inline-flex;align-items:center;gap:12px;font:700 1.05rem var(--body);text-decoration:none;padding:16px 26px 16px 18px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:var(--accent-ink);box-shadow:0 14px 30px -12px var(--glow),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .2s cubic-bezier(.3,.7,.2,1.4),box-shadow .2s;overflow:hidden}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-100%);animation:sweep 3.5s ease-in-out infinite}
+@keyframes sweep{60%,100%{transform:translateX(100%)}}
+.btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 20px 40px -14px var(--glow)}
+.btn .ico{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.2);display:grid;place-items:center;flex:none}
+.btn svg{width:22px;height:22px}
+.btn small{display:block;font:600 .68rem var(--mono);opacity:.85;letter-spacing:.04em;text-transform:uppercase}
+.btn span{line-height:1.15}
+.ghost{font-weight:700;text-decoration:none;padding:16px 20px;border-radius:18px;border:1.5px solid var(--line);background:color-mix(in srgb,var(--surface) 60%,transparent)}
+.ghost:hover{border-color:var(--ink)}
+.proof{display:flex;flex-wrap:wrap;gap:18px 26px;padding-top:6px}
+.proof div{display:grid}
+.proof b{font:800 1.7rem/1 var(--display);letter-spacing:-.02em}
+.proof span{font:500 .74rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* ---------- phone stage ---------- */
+.stage{position:relative;isolation:isolate;justify-self:center;width:min(320px,100%);perspective:1200px}
+.phone{width:100%;aspect-ratio:9/19;background:#0C1410;border-radius:46px;padding:10px;box-shadow:0 50px 90px -40px rgba(10,30,20,.6),0 0 0 1px rgba(255,255,255,.06) inset,0 0 0 2px #26332C;transform:rotateY(-12deg) rotateX(6deg) rotate(2deg);transition:transform .4s ease;transform-style:preserve-3d;position:relative}
+.notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:84px;height:22px;border-radius:20px;background:#0C1410;z-index:3}
+.screen{height:100%;background:var(--bg);border-radius:37px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.cam{position:relative;flex:1.15;background:radial-gradient(circle at 50% 45%,#3b4a40 0%,#1c2620 70%);overflow:hidden}
+.cam svg.food{position:absolute;inset:8% 6% 6%;width:88%;height:86%}
+.scanline{position:absolute;left:0;right:0;height:70px;top:-70px;background:linear-gradient(180deg,transparent,rgba(52,210,122,.35));border-bottom:2px solid #34D27A;box-shadow:0 6px 24px #34D27A;animation:scan 3.2s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes scan{0%{top:-70px}55%{top:100%}100%{top:100%}}
+.corner{position:absolute;width:26px;height:26px;border:3px solid #fff;opacity:.9}
+.c1{top:44px;left:16px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+.c2{top:44px;right:16px;border-left:0;border-bottom:0;border-radius:0 10px 0 0}
+.c3{bottom:14px;left:16px;border-right:0;border-top:0;border-radius:0 0 0 10px}
+.c4{bottom:14px;right:16px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+.box{position:absolute;border:2px solid;border-radius:10px;animation:pop 3.2s ease infinite}
+.box em{position:absolute;top:-22px;left:-2px;white-space:nowrap;font:600 .6rem var(--mono);font-style:normal;color:#04110A;padding:2px 7px;border-radius:6px}
+.bx1{left:20%;top:30%;width:34%;height:28%;border-color:#FFA352;animation-delay:.3s}.bx1 em{background:#FFA352}
+.bx2{left:52%;top:40%;width:30%;height:26%;border-color:#7096FF;animation-delay:.6s}.bx2 em{background:#7096FF}
+.bx3{left:28%;top:62%;width:30%;height:22%;border-color:#34D27A;animation-delay:.9s}.bx3 em{background:#34D27A}
+@keyframes pop{0%{opacity:.35;transform:scale(.92)}18%,100%{opacity:1;transform:scale(1)}}
+.result{background:var(--surface);border-radius:22px 22px 0 0;margin-top:-18px;position:relative;padding:16px 16px 18px;display:grid;gap:10px;box-shadow:0 -10px 30px -18px rgba(0,0,0,.4)}
+.handle{width:38px;height:4px;border-radius:9px;background:var(--line);justify-self:center}
+.r-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.r-top b{font:800 1rem var(--display)}
+.r-top span{font:700 1.5rem/1 var(--display);color:var(--accent);letter-spacing:-.02em}
+.r-top span small{font:600 .6rem var(--mono);color:var(--muted);margin-left:2px}
+.r-macros{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.r-macros div{border-radius:12px;padding:7px 8px;display:grid;gap:1px;background:var(--surface-2)}
+.r-macros b{font:800 .95rem var(--display)}
+.r-macros span{font:500 .56rem var(--mono);color:var(--muted);text-transform:uppercase}
+.r-macros .p b{color:var(--prot)}.r-macros .c b{color:var(--carb)}.r-macros .f b{color:var(--fat)}
+.r-add{border-radius:14px;padding:11px;text-align:center;font:700 .82rem var(--body);background:var(--ink);color:var(--bg)}
+
+/* floating chips */
+.chip-f{position:absolute;z-index:4;display:flex;align-items:center;gap:10px;padding:10px 14px 10px 10px;border-radius:16px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:0 18px 40px -18px rgba(10,30,20,.45);font-size:.8rem;white-space:nowrap;animation:float 6s ease-in-out infinite}
+.chip-f b{display:block;font:800 .95rem var(--display)}
+.chip-f small{color:var(--muted);font:500 .66rem var(--mono)}
+.chip-f .dot{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;color:#fff;font:800 .8rem var(--display)}
+.cf1{top:12%;left:-28%}.cf1 .dot{background:var(--prot)}
+.cf2{top:46%;right:-30%;animation-delay:-2s}.cf2 .dot{background:var(--fat)}
+.cf3{bottom:8%;left:-24%;animation-delay:-4s}
+.mini-ring{width:34px;height:34px;flex:none}
+.mini-ring circle{fill:none;stroke-width:5}
+@keyframes float{50%{transform:translateY(-12px)}}
+
+/* ---------- marquee ---------- */
+.marquee{position:relative;z-index:1;border-block:1px solid var(--line);background:var(--ink);color:var(--bg);overflow:hidden;padding-block:16px;transform:rotate(-1.2deg);margin-inline:-20px}
+.track{display:flex;gap:40px;width:max-content;animation:marq 38s linear infinite}
+.track span{font:700 1.15rem var(--display);white-space:nowrap;display:flex;align-items:center;gap:12px}
+.track span i{font:600 .78rem var(--mono);font-style:normal;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--bg) 14%,transparent)}
+.track span::after{content:"✦";color:var(--accent);margin-left:28px}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section{position:relative;z-index:1;padding-block:96px}
+.sec-head{display:grid;gap:14px;margin-bottom:44px;max-width:64ch}
+.eyebrow{font:600 .78rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h2{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:800;letter-spacing:-.03em}
+h2 .soft{color:var(--muted)}
+.sec-head p{color:var(--muted);font-size:1.08rem}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
+.step{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:28px;display:grid;gap:12px;align-content:start;min-width:0;overflow:hidden;transition:transform .3s ease,border-color .3s}
+.step:hover{transform:translateY(-6px);border-color:var(--accent)}
+.step::before{counter-increment:s;content:"0" counter(s);position:absolute;right:-6px;top:-22px;font:800 7.5rem/1 var(--display);color:var(--surface-2);letter-spacing:-.05em;z-index:0}
+.step>*{position:relative;z-index:1}
+.step .ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.step .ic svg{width:26px;height:26px}
+.step h3{font-size:1.45rem}
+.step p{color:var(--muted)}
+.step .time{font:600 .72rem var(--mono);color:var(--accent)}
+
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:28px;display:grid;gap:12px;align-content:start;min-width:0;overflow:hidden;position:relative;transition:transform .3s ease,box-shadow .3s}
+.card:hover{transform:translateY(-4px);box-shadow:0 30px 60px -36px rgba(10,30,20,.4)}
+.card h3{font-size:1.55rem;letter-spacing:-.015em}
+.card p{color:var(--muted)}
+.label{justify-self:start;font:600 .7rem var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.span-4{grid-column:span 4}.span-2{grid-column:span 2}.span-3{grid-column:span 3}
+.card.hero-card{background:linear-gradient(140deg,var(--ink),color-mix(in srgb,var(--ink) 75%,var(--accent)));color:var(--bg);border-color:transparent;grid-template-columns:1.1fr .9fr;align-items:center;gap:24px}
+.card.hero-card p{color:color-mix(in srgb,var(--bg) 75%,transparent)}
+.card.hero-card .label{background:color-mix(in srgb,var(--bg) 14%,transparent);color:var(--bg)}
+.hero-card .txt{display:grid;gap:12px;min-width:0}
+.detect{display:grid;gap:8px;min-width:0}
+.detect div{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--bg) 9%,transparent);font:500 .82rem var(--mono)}
+.detect div b{font-family:var(--body);font-weight:700}
+.detect div:nth-child(1){border-left:4px solid var(--carb)}
+.detect div:nth-child(2){border-left:4px solid var(--prot)}
+.detect div:nth-child(3){border-left:4px solid var(--accent)}
+.detect .tot{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.big-ring{justify-self:center;width:150px;height:150px;margin-top:6px}
+.big-ring circle{fill:none;stroke-width:13;stroke-linecap:round}
+.big-ring text{fill:var(--ink);font:800 26px var(--display)}
+.big-ring .s{fill:var(--muted);font:500 10px var(--mono)}
+.formula{font:600 .8rem var(--mono);background:var(--surface-2);border-radius:12px;padding:12px 14px;overflow-x:auto;white-space:nowrap}
+.recipe{display:grid;gap:10px;background:var(--surface-2);border-radius:18px;padding:16px}
+.recipe .need{display:flex;flex-wrap:wrap;gap:6px}
+.recipe .need span{font:600 .72rem var(--mono);padding:4px 10px;border-radius:999px;color:#fff}
+.recipe b{font:800 1.1rem var(--display)}
+.recipe small{color:var(--muted);font:500 .75rem var(--mono)}
+.rescue-btn{justify-self:start;display:inline-flex;gap:8px;align-items:center;font:700 .85rem var(--body);padding:10px 16px;border-radius:12px;background:var(--fat);color:#fff}
+.timeline{display:grid;gap:0;position:relative;padding-left:20px}
+.timeline::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.timeline div{position:relative;display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:.9rem}
+.timeline div::before{content:"";position:absolute;left:-20px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--surface)}
+.timeline small{color:var(--muted);font:500 .72rem var(--mono);display:block}
+.timeline span{font:700 .9rem var(--mono);white-space:nowrap}
+
+/* ---------- CTA / install ---------- */
+.cta{position:relative;border-radius:40px;padding:clamp(32px,6vw,72px);overflow:hidden;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-2) 55%,var(--prot) 120%);color:#fff;display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.cta::before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;border:80px solid rgba(255,255,255,.08);right:-200px;top:-260px}
+.cta::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;border:40px solid rgba(255,255,255,.07);left:-120px;bottom:-160px}
+.cta>*{position:relative;z-index:1;min-width:0}
+.cta h2{font-size:clamp(2.4rem,6vw,4.6rem);color:#fff}
+.cta .cta-copy{display:grid;gap:22px}
+.cta .cta-copy p{font-size:1.1rem;opacity:.92;max-width:38ch}
+.btn-w{display:inline-flex;align-items:center;gap:12px;justify-self:start;text-decoration:none;font:800 1.1rem var(--body);padding:18px 28px 18px 18px;border-radius:20px;background:#fff;color:#0B2A18;box-shadow:0 20px 40px -18px rgba(0,0,0,.5);transition:transform .2s cubic-bezier(.3,.7,.2,1.4)}
+.btn-w:hover{transform:translateY(-3px) scale(1.03)}
+.btn-w .ico{width:42px;height:42px;border-radius:13px;background:#0B2A18;color:#fff;display:grid;place-items:center}
+.btn-w svg{width:22px;height:22px}
+.btn-w small{display:block;font:600 .68rem var(--mono);color:#3F6B52;text-transform:uppercase;letter-spacing:.05em}
+.btn-ios{background:var(--ink);color:var(--bg);box-shadow:0 14px 30px -14px rgba(10,30,20,.5),inset 0 1px 0 rgba(255,255,255,.12)}
+.btn-ios .ico{background:color-mix(in srgb,var(--bg) 16%,transparent)}
+.btn-ios:hover{box-shadow:0 20px 40px -16px rgba(10,30,20,.55)}
+.store-row{display:flex;flex-wrap:wrap;gap:12px}
+.btn-w-ios{background:#0B2A18;color:#fff}
+.btn-w-ios .ico{background:#fff;color:#0B2A18}
+.btn-w-ios small{color:#9FD3B4}
+.install .ios-note{margin-top:6px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2);text-transform:none;letter-spacing:0;font:600 .9rem var(--body);opacity:1}
+.specs{display:flex;flex-wrap:wrap;gap:8px}
+.specs span{font:600 .74rem var(--mono);border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px}
+.install{list-style:none;margin:0;padding:22px;display:grid;gap:12px;counter-reset:i;background:rgba(6,20,12,.22);border:1px solid rgba(255,255,255,.18);border-radius:26px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.install li{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:center}
+.install li::before{counter-increment:i;content:counter(i);width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font:800 1.05rem var(--display);background:#fff;color:#0B2A18}
+.install .head{display:block;grid-template-columns:none;font:600 .74rem var(--mono);text-transform:uppercase;letter-spacing:.08em;opacity:.85}
+.install .head::before{display:none}
+
+/* faq */
+.faq-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.faq{display:grid;gap:10px;min-width:0}
+details{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px 22px;transition:border-color .2s}
+details[open]{border-color:var(--accent)}
+summary{cursor:pointer;font:700 1.12rem var(--display);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:1.2rem;transition:transform .25s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:10px}
+
+footer{position:relative;z-index:1;padding-block:40px 32px;display:grid;gap:28px}
+.foot-word{font:800 clamp(4rem,18vw,13rem)/.8 var(--display);letter-spacing:-.06em;background:linear-gradient(180deg,var(--ink) 20%,transparent 110%);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:.9;user-select:none}
+.foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:20px}
+
+
+/* ---- hero extra visuals ---- */
+.halo{position:absolute;inset:-18%;border-radius:50%;background:conic-gradient(from 0deg,var(--accent),var(--accent-2),var(--prot),var(--fat),var(--carb),var(--accent));filter:blur(60px);opacity:.38;animation:spin 16s linear infinite;z-index:-1}
+.orbits{position:absolute;left:50%;top:50%;width:190%;max-width:none;aspect-ratio:1;transform:translate(-50%,-50%);z-index:-1;overflow:visible}
+.orb{fill:none;stroke:var(--ink);stroke-opacity:.14;stroke-width:1.5}
+.o1{stroke-dasharray:4 10}.o2{stroke-dasharray:1 12;stroke-width:2.5;stroke-linecap:round}
+.spin{transform-origin:300px 300px;animation:spin 22s linear infinite}
+.s2{animation-duration:34s;animation-direction:reverse}
+.sticker{position:absolute;width:74px;height:74px;z-index:5;filter:drop-shadow(0 14px 18px rgba(10,30,20,.28));transition:translate .25s ease-out}
+.sticker{animation:bob 7s ease-in-out infinite}
+.st1{top:-6%;right:-14%;rotate:14deg}
+.st2{bottom:22%;right:-24%;width:66px;height:66px;animation-delay:-2s}
+.st3{top:30%;left:-34%;width:62px;height:62px;animation-delay:-4s;rotate:-12deg}
+.st4{bottom:-7%;right:6%;width:84px;height:84px;animation-delay:-5s}
+@keyframes bob{50%{transform:translateY(-14px) rotate(6deg)}}
+.ticker{position:absolute;left:50%;bottom:-11%;transform:translateX(-50%);z-index:5;white-space:nowrap;display:flex;align-items:center;gap:8px;font:600 .78rem var(--mono);padding:9px 14px;border-radius:999px;background:var(--ink);color:var(--bg);box-shadow:0 14px 30px -14px rgba(10,30,20,.6)}
+.ticker i{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:ping 1.6s infinite}
+.ticker b{color:var(--accent);min-width:13ch;display:inline-block}
+.btn .soon-badge{font:700 .62rem var(--mono);font-style:normal;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;border-radius:999px;background:var(--accent);color:var(--accent-ink);margin-left:2px}
+.soon{cursor:default;opacity:.92}
+.soon::before{display:none}
+.btn.soon:hover,.btn-w.soon:hover{transform:none}
+.btn-ios.soon{background:transparent;color:var(--ink);border:1.5px dashed color-mix(in srgb,var(--ink) 35%,transparent);box-shadow:none}
+.btn-ios.soon .ico{background:var(--surface-2)}
+.btn-w-ios.soon{background:transparent;border:1.5px dashed rgba(255,255,255,.55);color:#fff;box-shadow:none}
+.btn-w-ios.soon small{color:rgba(255,255,255,.75)}
+@media (max-width:920px){.hero{padding-block:24px 110px}.st3{left:-26%}.st2{right:-18%}}
+@media (max-width:560px){.sticker{width:52px;height:52px}.st4{width:60px;height:60px}.st1{right:-6%}.st3{left:-14%;top:40%}.st2{right:-10%}.halo{inset:-8%}}
+@media (prefers-reduced-motion:reduce){.halo,.spin{animation:none}}
+/* reveal (starts visible; JS adds a lift-in only for elements below the fold) */
+.rv{transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.pre{opacity:0;transform:translateY(28px)}
+
+@media (max-width:920px){
+  .hero,.cta,.faq-wrap{grid-template-columns:1fr}
+  .hero{padding-block:24px 70px;gap:56px}
+  .stage{width:min(290px,78%)}
+  .cf1{left:-22%}.cf2{right:-24%}.cf3{left:-18%}
+  .steps{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr 1fr}
+  .span-4,.span-3{grid-column:span 2}.span-2{grid-column:span 1}
+  .card.hero-card{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .bento{grid-template-columns:1fr}
+  .span-2,.span-3,.span-4{grid-column:auto}
+  .chip-f{font-size:.72rem;padding:8px 10px 8px 8px}.chip-f .dot,.mini-ring{width:28px;height:28px}
+  .cf1{left:-16%;top:6%}.cf2{right:-16%}.cf3{left:-12%}
+  section{padding-block:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .scanline{display:none}
+  .rv.pre{opacity:1;transform:none}
+}
+</style>
+
+<div class="aurora" aria-hidden="true"><div class="grid-bg"></div><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
+
+<div class="wrap">
+  <nav>
+    <div class="nav-in">
+      <a class="logo" href="#top" aria-label="Bocado, inicio"><span class="logo-mark" aria-hidden="true"></span>Bocado</a>
+      <div class="nav-links">
+        <a class="hide-sm" href="#como">Cómo funciona</a>
+        <a class="hide-sm" href="#funciones">Funciones</a>
+        <a class="pill" href="#descargar">Descargar</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-copy">
+      <span class="tag"><i></i>Gratis para Android</span>
+      <h1>Foto al plato.<br><span class="shine">Macros al instante.</span></h1>
+      <p class="lead">Apunta la cámara a tu comida y <b>Bocado</b> te dice las calorías, proteína, carbs y grasa. Sin buscar alimentos ni pesar nada.</p>
+      <div class="cta-row">
+        <a class="btn" href="https://github.com/cesar2006fg/bocado/releases/latest/download/bocado.apk" download="bocado.apk">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg></span>
+          <span><small>Android · APK</small>Bajar para Android</span>
+        </a>
+        <div class="btn btn-ios soon" aria-disabled="true">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg></span>
+          <span><small>iPhone</small>iOS · Próximamente</span>
+          <em class="soon-badge">Pronto</em>
+        </div>
+      </div>
+      <div class="proof">
+        <div><b>~10 s</b><span>por comida</span></div>
+        <div><b>1 foto</b><span>todo el plato</span></div>
+        <div><b>3 macros</b><span>+ calorías</span></div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="halo" aria-hidden="true"></div>
+      <svg class="orbits" viewBox="0 0 600 600" aria-hidden="true">
+        <circle cx="300" cy="300" r="215" class="orb o1"/>
+        <circle cx="300" cy="300" r="270" class="orb o2"/>
+        <g class="spin s1"><circle cx="300" cy="85" r="9" fill="var(--prot)"/><circle cx="515" cy="300" r="6" fill="var(--accent)"/></g>
+        <g class="spin s2"><circle cx="300" cy="570" r="11" fill="var(--carb)"/><circle cx="30" cy="300" r="7" fill="var(--fat)"/></g>
+      </svg>
+      <svg class="sticker st1 par" data-d="30" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="44" rx="26" ry="32" fill="#4C8A2E" transform="rotate(-18 40 44)"/><ellipse cx="40" cy="45" rx="20" ry="26" fill="#D7E8A2" transform="rotate(-18 40 45)"/><circle cx="42" cy="52" r="10" fill="#8B5A2B"/></svg>
+      <svg class="sticker st2 par" data-d="-24" viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="42" rx="32" ry="26" fill="#FFFFFF" stroke="#E7E2D6" stroke-width="2"/><circle cx="44" cy="40" r="12" fill="#FFB31A"/><circle cx="40" cy="36" r="3.5" fill="#FFE08A"/></svg>
+      <svg class="sticker st3 par" data-d="20" viewBox="0 0 80 80" aria-hidden="true"><path d="M14 58c10-30 34-44 56-46-6 4-8 10-6 14-16 2-32 14-40 34z" fill="#FFD84D"/><path d="M66 12l6-4" stroke="#6B4E1E" stroke-width="4" stroke-linecap="round"/></svg>
+      <svg class="sticker st4 par" data-d="-34" viewBox="0 0 80 80" aria-hidden="true"><path d="M8 50a32 32 0 0 1 64 0z" fill="#F2C46D"/><path d="M14 50c4-8 8-8 12 0s8 8 12 0 8-8 12 0 8 8 12 0" fill="none" stroke="#3FA34D" stroke-width="5" stroke-linecap="round"/><path d="M18 44h44" stroke="#C0392B" stroke-width="5" stroke-linecap="round" opacity=".8"/></svg>
+      <div class="ticker" aria-hidden="true"><i></i>Detectando: <b id="tick">pollo asado</b></div>
+      <div class="phone" id="phone" role="img" aria-label="La app escaneando un plato de arroz, pollo y brócoli: 562 kcal, 48 g de proteína, 58 g de carbohidratos y 14 g de grasa">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="cam">
+            <svg class="food" viewBox="0 0 200 200" aria-hidden="true">
+              <ellipse cx="100" cy="106" rx="96" ry="90" fill="#000" opacity=".25"/>
+              <circle cx="100" cy="100" r="94" fill="var(--plate-rim)"/>
+              <circle cx="100" cy="100" r="78" fill="var(--plate)"/>
+              <!-- arroz -->
+              <g fill="#F6F1E4"><ellipse cx="72" cy="82" rx="36" ry="28"/></g>
+              <g fill="#E6DCC4"><ellipse cx="60" cy="74" rx="3" ry="1.6"/><ellipse cx="78" cy="70" rx="3" ry="1.6"/><ellipse cx="88" cy="86" rx="3" ry="1.6"/><ellipse cx="66" cy="92" rx="3" ry="1.6"/><ellipse cx="52" cy="84" rx="3" ry="1.6"/><ellipse cx="80" cy="96" rx="3" ry="1.6"/><ellipse cx="94" cy="76" rx="3" ry="1.6"/></g>
+              <!-- pollo -->
+              <g><rect x="100" y="80" width="56" height="26" rx="12" fill="#C98A4B" transform="rotate(-14 128 93)"/><rect x="104" y="102" width="52" height="24" rx="11" fill="#B9773A" transform="rotate(-8 130 114)"/>
+              <path d="M110 86l40-10M112 110l38-6" stroke="#8E5626" stroke-width="2.5" stroke-linecap="round" opacity=".6"/></g>
+              <!-- brócoli -->
+              <g><rect x="74" y="132" width="6" height="16" rx="3" fill="#7FB069"/><rect x="92" y="136" width="6" height="14" rx="3" fill="#7FB069"/>
+              <circle cx="70" cy="128" r="11" fill="#2F7D3B"/><circle cx="82" cy="124" r="12" fill="#3A9147"/><circle cx="76" cy="134" r="10" fill="#2A6E35"/>
+              <circle cx="92" cy="130" r="10" fill="#3A9147"/><circle cx="100" cy="134" r="9" fill="#2F7D3B"/></g>
+              <circle cx="132" cy="146" r="6" fill="#E4572E"/><circle cx="142" cy="140" r="5" fill="#F07A3D"/>
+            </svg>
+            <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+            <div class="box bx1"><em>Arroz 150 g</em></div>
+            <div class="box bx2"><em>Pollo 160 g</em></div>
+            <div class="box bx3"><em>Brócoli 80 g</em></div>
+            <div class="scanline"></div>
+          </div>
+          <div class="result">
+            <div class="handle"></div>
+            <div class="r-top"><b>Pollo con arroz</b><span>562<small>kcal</small></span></div>
+            <div class="r-macros">
+              <div class="p"><b>48 g</b><span>Proteína</span></div>
+              <div class="c"><b>58 g</b><span>Carbs</span></div>
+              <div class="f"><b>14 g</b><span>Grasa</span></div>
+            </div>
+            <div class="r-add">Agregar a mi día</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chip-f cf1" aria-hidden="true"><span class="dot">P</span><div><b>+48 g</b><small>proteína</small></div></div>
+      <div class="chip-f cf2" aria-hidden="true"><span class="dot">✦</span><div><b>Receta lista</b><small>te faltan 32 g P</small></div></div>
+      <div class="chip-f cf3" aria-hidden="true">
+        <svg class="mini-ring" viewBox="0 0 34 34"><circle cx="17" cy="17" r="13" stroke="var(--line)"/><circle cx="17" cy="17" r="13" stroke="var(--accent)" stroke-linecap="round" stroke-dasharray="81.7" stroke-dashoffset="22" transform="rotate(-90 17 17)"/></svg>
+        <div><b>1,450 / 2,200</b><small>kcal de hoy</small></div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="marquee" aria-label="Ejemplos de comidas que reconoce Bocado">
+  <div class="track">
+    <span>Tacos al pastor ×3 <i>~480 kcal</i></span><span>Chilaquiles verdes <i>~620 kcal</i></span><span>Licuado de proteína <i>~350 kcal</i></span><span>Pollo con arroz <i>~560 kcal</i></span><span>Avena con plátano <i>~420 kcal</i></span><span>Huevos a la mexicana <i>~310 kcal</i></span><span>Ensalada César <i>~380 kcal</i></span><span>Torta de milanesa <i>~780 kcal</i></span>
+    <span aria-hidden="true">Tacos al pastor ×3 <i>~480 kcal</i></span><span aria-hidden="true">Chilaquiles verdes <i>~620 kcal</i></span><span aria-hidden="true">Licuado de proteína <i>~350 kcal</i></span><span aria-hidden="true">Pollo con arroz <i>~560 kcal</i></span><span aria-hidden="true">Avena con plátano <i>~420 kcal</i></span><span aria-hidden="true">Huevos a la mexicana <i>~310 kcal</i></span><span aria-hidden="true">Ensalada César <i>~380 kcal</i></span><span aria-hidden="true">Torta de milanesa <i>~780 kcal</i></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="como">
+    <div class="sec-head rv">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2>Tres pasos. <span class="soft">Cero básculas.</span></h2>
+    </div>
+    <div class="steps">
+      <div class="step rv">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+        <span class="time">0–2 s</span>
+        <h3>Toma la foto</h3>
+        <p>Apunta la cámara a tu plato desde arriba. Funciona con comida casera, de fonda o de restaurante.</p>
+      </div>
+      <div class="step rv">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18 9.5l-4.2 1.9L12 16l-1.8-4.6L6 9.5l4.2-1.9z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>
+        <span class="time">2–8 s</span>
+        <h3>La IA la analiza</h3>
+        <p>Bocado identifica cada alimento, estima la porción y calcula calorías y macros.</p>
+      </div>
+      <div class="step rv">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 9 9h-9z" fill="currentColor" opacity=".3"/></svg></span>
+        <span class="time">listo</span>
+        <h3>Se suma a tu día</h3>
+        <p>La comida entra a tu historial y el anillo te muestra cuánto te queda para tu meta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="funciones">
+    <div class="sec-head rv">
+      <span class="eyebrow">Hecha para el gym</span>
+      <h2>Come para tu objetivo, <span class="soft">no a ojo.</span></h2>
+    </div>
+    <div class="bento">
+      <div class="card hero-card span-4 rv">
+        <div class="txt">
+          <span class="label">Escáner con IA</span>
+          <h3>Ve cada alimento de tu plato</h3>
+          <p>Separa el arroz del pollo y del brócoli, estima gramos y te da el desglose de cada uno.</p>
+        </div>
+        <div class="detect">
+          <div><b>Arroz blanco</b><span>150 g · 195 kcal</span></div>
+          <div><b>Pechuga asada</b><span>160 g · 264 kcal</span></div>
+          <div><b>Brócoli</b><span>80 g · 28 kcal</span></div>
+          <div class="tot"><b>Total</b><span>562 kcal</span></div>
+        </div>
+      </div>
+
+      <div class="card span-2 rv">
+        <span class="label">Progreso</span>
+        <h3>Tu día en un anillo</h3>
+        <svg class="big-ring" viewBox="0 0 150 150" aria-label="1,450 de 2,200 kcal">
+          <circle cx="75" cy="75" r="62" stroke="var(--surface-2)"/>
+          <circle cx="75" cy="75" r="62" stroke="var(--prot)" stroke-dasharray="389.6" stroke-dashoffset="117" transform="rotate(-90 75 75)"/>
+          <circle cx="75" cy="75" r="44" stroke="var(--surface-2)" stroke-width="10"/>
+          <circle cx="75" cy="75" r="44" stroke="var(--carb)" stroke-width="10" stroke-dasharray="276.5" stroke-dashoffset="105" transform="rotate(-90 75 75)"/>
+          <text x="75" y="78" text-anchor="middle">1,450</text>
+          <text class="s" x="75" y="94" text-anchor="middle">/ 2,200 kcal</text>
+        </svg>
+      </div>
+
+      <div class="card span-3 rv">
+        <span class="label">Metas personalizadas</span>
+        <h3>Macros calculados para tu cuerpo</h3>
+        <p>Tu meta diaria sale de la fórmula Mifflin-St Jeor con tu peso, estatura, edad y nivel de actividad. Volumen, definición o mantenimiento.</p>
+        <div class="formula">TMB = 10·kg + 6.25·cm − 5·edad + 5</div>
+      </div>
+
+      <div class="card span-3 rv">
+        <span class="label">Botón de Rescate</span>
+        <h3>Recetas que cierran tus macros</h3>
+        <div class="recipe">
+          <div class="need"><span style="background:var(--prot)">faltan 32 g P</span><span style="background:var(--carb)">40 g C</span><span style="background:var(--fat)">8 g G</span></div>
+          <b>Bowl de atún con arroz y aguacate</b>
+          <small>15 min · 410 kcal</small>
+        </div>
+        <span class="rescue-btn">✦ Rescatar mi día</span>
+      </div>
+
+      <div class="card span-6 rv">
+        <span class="label">Historial</span>
+        <h3>Todo lo que comiste hoy</h3>
+        <div class="timeline">
+          <div><p>Avena con plátano<small>Desayuno · 08:10</small></p><span>420 kcal</span></div>
+          <div><p>Pollo con arroz y brócoli<small>Comida · 14:30</small></p><span>562 kcal</span></div>
+          <div><p>Licuado de proteína<small>Post-gym · 18:05</small></p><span>350 kcal</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="descargar">
+    <div class="cta rv">
+      <div class="cta-copy">
+        <h2>Tu próxima comida ya cuenta.</h2>
+        <p>Bájala gratis, crea tu cuenta y configura tus metas en un minuto.</p>
+        <!-- Link directo al APK (GitHub Releases) -->
+        <div class="store-row">
+        <a class="btn-w" id="apk-link" href="https://github.com/cesar2006fg/bocado/releases/latest/download/bocado.apk" download="bocado.apk">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg></span>
+          <span><small>Android 7.0+ · APK</small>Descargar para Android</span>
+        </a>
+        <div class="btn-w btn-w-ios soon" aria-disabled="true">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg></span>
+          <span><small>iPhone</small>iOS · Próximamente</span>
+        </div>
+        </div>
+        <div class="specs"><span>Versión 1.0.0</span><span>Solo Android por ahora</span><span>Gratis</span></div>
+      </div>
+      <ol class="install">
+        <li class="head">Cómo instalarla en Android</li>
+        <li>Toca <strong>Descargar</strong> desde tu teléfono.</li>
+        <li>Abre el archivo desde <strong>Descargas</strong>.</li>
+        <li>Si te lo pide, activa <strong>Permitir de esta fuente</strong>.</li>
+        <li>Toca <strong>Instalar</strong> y crea tu cuenta.</li>
+        <li class="head ios-note">¿Tienes iPhone? La versión de iOS viene en camino.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="faq-wrap">
+      <div class="sec-head rv">
+        <span class="eyebrow">Preguntas</span>
+        <h2>Lo que todos preguntan</h2>
+      </div>
+      <div class="faq rv">
+        <details><summary>¿Por qué no está en Play Store?</summary><p>Por ahora Bocado se distribuye como APK directo. Android muestra un aviso al instalar apps fuera de la tienda; es normal.</p></details>
+        <details><summary>¿Funciona en iPhone?</summary><p>Todavía no. Por ahora Bocado es solo para Android; la versión de iPhone viene en camino.</p></details>
+        <details><summary>¿Qué tan exacto es el conteo?</summary><p>Es una estimación a partir de la foto. Para mejores resultados, toma la foto desde arriba, con buena luz y con todo el plato visible.</p></details>
+        <details><summary>¿Cuánto cuesta?</summary><p>Nada. Es gratis.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-word" aria-hidden="true">Bocado</div>
+    <div class="foot-row"><span>© 2026 Bocado</span><span>Escanea, registra, entrena.</span></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Tilt del teléfono con el mouse
+  var stage=document.getElementById('stage'), phone=document.getElementById('phone');
+  var fine=window.matchMedia&&matchMedia('(pointer:fine)').matches;
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(fine&&!still&&stage&&phone){
+    document.addEventListener('mousemove',function(e){
+      var r=stage.getBoundingClientRect();
+      var x=(e.clientX-(r.left+r.width/2))/window.innerWidth;
+      var y=(e.clientY-(r.top+r.height/2))/window.innerHeight;
+      phone.style.transform='rotateY('+(-12+x*22)+'deg) rotateX('+(6-y*14)+'deg) rotate(2deg)';
+    });
+  }
+  // Ticker de detección
+  var words=['pollo asado','arroz blanco','brócoli','aguacate','huevo estrellado','tortillas','plátano'],k=0,tk=document.getElementById('tick');
+  if(tk&&!still){setInterval(function(){k=(k+1)%words.length;tk.textContent=words[k];},1600);}
+  // Parallax de stickers
+  var stk=[].slice.call(document.querySelectorAll('.par'));
+  if(fine&&!still){document.addEventListener('mousemove',function(e){
+    var x=e.clientX/window.innerWidth-.5,y=e.clientY/window.innerHeight-.5;
+    stk.forEach(function(el){var d=+el.dataset.d;el.style.translate=(x*d)+'px '+(y*d)+'px';});
+  });}
+  // Aparición al hacer scroll (solo para lo que está fuera de pantalla al cargar)
+  if(still||!('IntersectionObserver' in window))return;
+  var els=[].slice.call(document.querySelectorAll('.rv'));
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.remove('pre');io.unobserve(en.target);}});},{threshold:.12});
+  els.forEach(function(el,i){
+    if(el.getBoundingClientRect().top>window.innerHeight){el.classList.add('pre');el.style.transitionDelay=(i%3)*80+'ms';io.observe(el);}
+  });
+})();
+</script>
+
+</body></html>
